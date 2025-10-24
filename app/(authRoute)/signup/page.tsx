@@ -8,20 +8,22 @@ import { InputType } from "@/types/form.types";
 import registrationForm from "@/utils/forms/registrationForm";
 import { validateForm } from "@/utils/forms/validation";
 import Link from "next/link";
-import { FormEvent, startTransition, useEffect, useState } from "react";
+import { FormEvent, startTransition, useEffect, useEffectEvent, useState, ViewTransition } from "react";
 
 const SignUpPage = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [error, setError] = useState<Record<string, string>>({});
-  console.log(error)
+
+  const resetFormData = useEffectEvent(() => setFormData({}))
 
   useEffect(() => {
-    setFormData({})
+    resetFormData()
   }, [step])
 
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    setError({})
     const formErrors = validateForm(registrationForm[step], formData);
     startTransition(() => {
       setError(formErrors);
@@ -83,17 +85,19 @@ const SignUpPage = () => {
               }
             })}
           </div>
-          <div className="flex gap-7 flex-col items-center">
-            <button className="neo-pop-btn w-full">{step === 0 ? "Sign up" : "Submit"}</button>
-            {step === 0 && (
-              <span>
-                Already have an account?{" "}
-                <Link className="brand-link" href={"/login"}>
-                  Login
-                </Link>
-              </span>
-            )}
-          </div>
+          <ViewTransition name="auth-button">
+            <div className="flex gap-7 flex-col items-center">
+              <button className="neo-pop-btn w-full">{step === 0 ? "Sign up" : "Submit"}</button>
+              {step === 0 && (
+                <span className="text-center">
+                  Already have an account?{" "}
+                  <Link className="brand-link" href={"/login"}>
+                    Login
+                  </Link>
+                </span>
+              )}
+            </div>
+          </ViewTransition>
         </form>
       </GlassCard>
     </AuthFormTemplate>
