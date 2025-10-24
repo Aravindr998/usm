@@ -5,6 +5,8 @@ import "./globals.css";
 
 const bitcountGridSingle = Bitcount_Grid_Single({
   variable: "--font-bitcount-single",
+  subsets: ["latin"],
+  fallback: ['Arial', 'sans-serif'],
 })
 
 export const metadata: Metadata = {

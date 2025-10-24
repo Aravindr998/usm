@@ -1,19 +1,28 @@
 "use client";
 import { TextInputProps } from "@/types/form.types";
-import { useState } from "react";
+import { FocusEvent, useState, ViewTransition } from "react";
 
-const TextInput = ({ label = "", placeholder = "", type, id }: TextInputProps) => {
+const TextInput = ({ label = "", placeholder = "", type, id, error="", name="", onChange, ref, value }: TextInputProps) => {
   const [focus, setFocus] = useState(false);
   const handleFocusIn = () => {
     setFocus(true);
   };
-  const handleFocusOut = () => {
-    setFocus(false);
+  const handleFocusOut = (e: FocusEvent<HTMLInputElement, Element>) => {
+    if (!e.target.value)
+      setFocus(false);
   };
+
   return (
-    <div className="form-group">
-      <label htmlFor={id || label} className={`${focus ? "focused" : ""}`}>{label}</label>
-      <input id={id || label} type={type} placeholder={placeholder} onFocus={handleFocusIn} onBlur={handleFocusOut} />
+    <div className="flex flex-col gap-1">
+      <div className={`form-group ${error ? "error" : ""} @container/input`}>
+        <label htmlFor={id || label} className={`${focus ? "focused" : ""} lg:text-2xl text-sm`}>{label}</label>
+        <input id={id || label} value={value || ""} type={type} placeholder={placeholder} onFocus={handleFocusIn} onBlur={handleFocusOut} name={name} onChange={onChange ? onChange : undefined} ref={ref} />
+      </div>
+        {error && 
+        <ViewTransition enter={"error-text"} exit={"error-hide"}>
+          <a className="text-red-600 ms-2" href={`#${id || label}`}>{error}</a>
+        </ViewTransition>
+        }
     </div>
   );
 };
