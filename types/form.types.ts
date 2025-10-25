@@ -33,5 +33,6 @@ export interface OtpProps {
     count: number,
     onChange: (otp: string) => void,
     value: string,
-    error: string
+    error: string,
+    intervalPeriod?: number
 }
