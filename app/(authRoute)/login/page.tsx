@@ -6,7 +6,7 @@ import Link from "next/link";
 import "../animation.css";
 import AuthFormTemplate from "@/components/form/AuthFormTemplate";
 import GlassCard from "@/components/Card/GlassCard";
-import { FormEvent, useState, ViewTransition } from "react";
+import { FormEvent, startTransition, useState, ViewTransition } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import NeoPopButton from "@/components/button/NeoPopButton";
 
@@ -26,33 +26,35 @@ const LoginPage = () => {
     const email = formData.get("email")?.toString()
     const password = formData.get("password")?.toString()
     let isError = false
-    if (!email) {
-      setError(prevState => {
-        return {
-          ...prevState,
-          email: "Email is required"
-        }
-      })
-      isError = true
-    }
-    if (!password) {
-      setError(prevState => {
-        return {
-          ...prevState,
-          password: "Password is required"
-        }
-      })
-      isError = true
-    }
-    if (email && !validateEmail(email)) {
-      setError(prevState => {
-        return {
-          ...prevState,
-          email: "Invalid Email"
-        }
-      })
-      isError = true
-    }
+    startTransition(() => {
+      if (!email) {
+        setError(prevState => {
+          return {
+            ...prevState,
+            email: "Email is required"
+          }
+        })
+        isError = true
+      }
+      if (!password) {
+        setError(prevState => {
+          return {
+            ...prevState,
+            password: "Password is required"
+          }
+        })
+        isError = true
+      }
+      if (email && !validateEmail(email)) {
+        setError(prevState => {
+          return {
+            ...prevState,
+            email: "Invalid Email"
+          }
+        })
+        isError = true
+      }
+    })
     if (isError) return
     const data = {
       email,
@@ -72,11 +74,13 @@ const LoginPage = () => {
   }
 
   function resetError (key: string) {
-    setError(prevState => {
-      return {
-        ...prevState,
-        [key]: ""
-      }
+    startTransition(() => {
+      setError(prevState => {
+        return {
+          ...prevState,
+          [key]: ""
+        }
+      })
     })
   }
   
