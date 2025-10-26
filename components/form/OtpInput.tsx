@@ -1,55 +1,33 @@
 "use client";
 
 import { OtpProps } from "@/types/form.types";
-import { ChangeEvent, KeyboardEvent, useEffect, useEffectEvent, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useRef } from "react";
 import OtpTimer from "./OtpTimer";
 
 const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 }: OtpProps) => {
-  const [otp, setOtp] = useState<string[]>([]);
   const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
     if (inputRef.current[0]) inputRef.current[0]?.focus();
   }, []);
-  const syncOtp = useEffectEvent(() => {
-    if (value && otp.join("") !== value) {
-      setOtp(value.split(""));
-    }
-  });
-
-  const updateFormData = useEffectEvent(() => {
-    if (onChange) {
-      onChange(otp.join(""));
-    }
-  });
-
-  useEffect(() => {
-    syncOtp();
-  }, [value]);
-
-  useEffect(() => {
-    updateFormData();
-  }, [otp]);
 
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
-    const value = e.target.value
-    if (!/^[0-9]?$/.test(value)) return
-    if (value.length <= 1) {
-      setOtp((prevState) => {
-        const copy = [...prevState]
-        copy[index] = value;
-        return copy;
-      });
+    const enteredValue = e.target.value
+    if (!/^[0-9]?$/.test(enteredValue)) return
+    if (enteredValue.length <= 1) {
+      const copy = [...value]
+      copy[index] = enteredValue;
+      onChange(copy)
     }
-    if (index > 0 && value === "") {
+    if (index > 0 && enteredValue === "") {
       inputRef.current[index - 1]?.focus();
-    } else if (inputRef.current[index + 1] && value !== "") {
+    } else if (inputRef.current[index + 1] && enteredValue !== "") {
       inputRef.current[index + 1]?.focus();
     }
   };
 
   const handleKeyDown = (e:KeyboardEvent<HTMLInputElement>, index: number) => {
-    if (e.key === "Backspace" && !otp[index] && index !== 0) {
+    if (e.key === "Backspace" && !value[index] && index !== 0) {
       inputRef.current[index - 1]?.focus();
     } else if (e.key === "ArrowLeft" && index > 0) {
       inputRef.current[index - 1]?.focus();
@@ -62,7 +40,7 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
     const data = e.clipboardData.getData("text").slice(0, count);
-    setOtp(data.split(""));
+    onChange(data.split(""));
     inputRef.current[data.length - 1]?.focus();
   };
 
@@ -80,7 +58,7 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
               inputMode="numeric"
               pattern="\d*"
               maxLength={1}
-              value={otp[index] || ""}
+              value={value[index] || ""}
               onChange={(e) => handleChange(index, e)}
               ref={(el) => {
                 inputRef.current[index] = el;

@@ -1,0 +1,43 @@
+.neo-pop-btn {
+  position: relative;
+  display: inline-block;
+  overflow: hidden;
+  background: var(--foreground);
+  color: var(--primary-color);
+  font-weight: 600;
+  font-size: 1.5rem;
+  padding: 0.6rem 1.5rem;
+  border: 3px solid var(--shadow-color);
+  border-radius: 1rem;
+  cursor: pointer;
+  text-transform: uppercase;
+  box-shadow: 6px 6px 0 var(--shadow-color);
+  transition: all 0.15s ease;
+}
+
+.neo-pop-btn::before {
+  content: "";
+  position: absolute;
+  top: 0;
+  width: 100%;
+  height: 100%;
+  background: var(--shine-effect);
+  left: -100%;
+  transition: var(--shine-transition);
+}
+
+.neo-pop-btn:hover {
+  background: var(--active-color);
+  transform: translate(-3px, -3px);
+  box-shadow: 9px 9px 0 var(--shadow-color);
+}
+
+.neo-pop-btn:hover::before {
+  left: 100%
+}
+
+.neo-pop-btn:active {
+  background: var(--active-secondary-color);
+  transform: translate(3px, 3px);
+  box-shadow: 3px 3px 0 var(--shadow-color);
+}

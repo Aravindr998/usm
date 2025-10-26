@@ -8,6 +8,7 @@ import AuthFormTemplate from "@/components/form/AuthFormTemplate";
 import GlassCard from "@/components/Card/GlassCard";
 import { FormEvent, useState, ViewTransition } from "react";
 import { validateEmail } from "@/utils/forms/validation";
+import NeoPopButton from "@/components/button/NeoPopButton";
 
 const LoginPage = () => {
   const [error, setError] = useState({
@@ -90,9 +91,9 @@ const LoginPage = () => {
           </div>
           <ViewTransition name="auth-button">
             <div className="flex gap-7 flex-col items-center">
-              <button className="neo-pop-btn w-full">
+              <NeoPopButton>
                 Login
-              </button>
+              </NeoPopButton>
               <span>
                 Don&apos;t have an account? <Link className="brand-link" href={"/signup"} >Sign up</Link>
               </span>

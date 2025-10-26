@@ -1,5 +1,6 @@
 "use client";
 
+import NeoPopButton from "@/components/button/NeoPopButton";
 import GlassCard from "@/components/Card/GlassCard";
 import AuthFormTemplate from "@/components/form/AuthFormTemplate";
 import OtpInput from "@/components/form/OtpInput";
@@ -11,7 +12,7 @@ import Link from "next/link";
 import { FormEvent, startTransition, useEffect, useEffectEvent, useState, ViewTransition } from "react";
 
 const SignUpPage = () => {
-  const [step, setStep] = useState(1);
+  const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [error, setError] = useState<Record<string, string>>({});
 
@@ -50,15 +51,30 @@ const SignUpPage = () => {
     }
   }
 
-  const handleChange = (value: string, key: string) => {
+  const handleChange = (value: string | string[], key: string, type: string) => {
     resetError(key)
-    setFormData(prevState => {
-      return {
-        ...prevState,
-        [key]: value
-      }
-    })
+    switch(type) {
+      case "otp":
+        if (typeof value === "string") return
+        setFormData(prevState => {
+          return {
+            ...prevState,
+            [key]: value.join("")
+          }
+        })
+      default:
+        if (typeof value !== "string") return
+        setFormData(prevState => {
+          return {
+            ...prevState,
+            [key]: value
+          }
+        })
+    }
+    
   }
+  console.log("rendering")
+  console.log(formData)
 
   return (
     <AuthFormTemplate sideText="Sign up">
@@ -68,7 +84,7 @@ const SignUpPage = () => {
             {registrationForm[step].map(({ type, key, label }) => {
               switch (type) {
                 case "otp":
-                  return <OtpInput count={6} key={key} value={formData[key]} onChange={(value) => handleChange(value, key)} error={error[key]}/>;
+                  return <OtpInput count={6} key={key} value={formData[key] ? formData[key]?.split("") : []} onChange={(value) => handleChange(value, key, type)} error={error[key]}/>;
                 default:
                   return (
                     <TextInput
@@ -79,7 +95,7 @@ const SignUpPage = () => {
                       id={key}
                       value={formData[key]}
                       error={error[key]}
-                      onChange={(e) => handleChange(e.target.value, key)}
+                      onChange={(e) => handleChange(e.target.value, key, type)}
                     />
                   );
               }
@@ -87,7 +103,7 @@ const SignUpPage = () => {
           </div>
           <ViewTransition name="auth-button">
             <div className="flex gap-7 flex-col items-center">
-              <button className="neo-pop-btn w-full">{step === 0 ? "Sign up" : "Submit"}</button>
+              <NeoPopButton>{step === 0 ? "Sign up" : "Submit"}</NeoPopButton>
               {step === 0 && (
                 <span className="text-center">
                   Already have an account?{" "}

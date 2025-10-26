@@ -31,8 +31,8 @@ export interface FormItem {
 
 export interface OtpProps {
     count: number,
-    onChange: (otp: string) => void,
-    value: string,
+    onChange: (otp: string[]) => void,
+    value: string[],
     error: string,
     intervalPeriod?: number
 }
