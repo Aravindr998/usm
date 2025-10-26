@@ -11,7 +11,7 @@ import Link from "next/link";
 import { FormEvent, startTransition, useEffect, useEffectEvent, useState, ViewTransition } from "react";
 
 const SignUpPage = () => {
-  const [step, setStep] = useState(0);
+  const [step, setStep] = useState(1);
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [error, setError] = useState<Record<string, string>>({});
 

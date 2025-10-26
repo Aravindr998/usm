@@ -1,67 +1,16 @@
 "use client";
 
 import { OtpProps } from "@/types/form.types";
-import { ChangeEvent, MouseEvent, useCallback, useEffect, useEffectEvent, useRef, useState } from "react";
+import { ChangeEvent, KeyboardEvent, useEffect, useEffectEvent, useRef, useState } from "react";
+import OtpTimer from "./OtpTimer";
 
 const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 }: OtpProps) => {
   const [otp, setOtp] = useState<string[]>([]);
-  const [timer, setTimer] = useState<number>()
-  const [loading, setLoading] = useState(false)
-  const [postLoadingMessage, setPostLoadingMessage] = useState("")
   const inputRef = useRef<(HTMLInputElement | null)[]>([]);
-  const intervalRef = useRef<NodeJS.Timeout>(null)
 
   useEffect(() => {
     if (inputRef.current[0]) inputRef.current[0]?.focus();
   }, []);
-
-  useEffect(() => {
-    if (timer === 0 && intervalRef.current) {
-      clearInterval(intervalRef.current)
-    }
-  }, [timer])
-
-  useEffect(() => {
-    let timeout: NodeJS.Timeout
-    if (postLoadingMessage) {
-      timeout = setTimeout(() => {
-        setPostLoadingMessage("")
-      }, 1000)
-    }
-    return () => {
-      if (timeout) clearTimeout(timeout)
-    }
-  }, [postLoadingMessage])
-
-  useEffect(() => {
-    return () => {
-      if (intervalRef.current) clearInterval(intervalRef.current)
-    }
-  }, [])
-
-  const setOtpTimer = useCallback(() => {
-    intervalRef.current = setInterval(() => {
-      setTimer(prevState => {
-        if (prevState === undefined) {
-          return intervalPeriod
-        } else if (prevState > 0) {
-          return --prevState
-        }
-        return 0
-      })
-    }, 1000)
-  }, [intervalPeriod])
-
-  useEffect(() => {
-    if (intervalPeriod !== undefined) {
-      setOtpTimer()
-    }
-    return () => {
-      if (intervalRef.current)
-        clearInterval(intervalRef.current)
-    }
-  }, [intervalPeriod, setOtpTimer])
-
   const syncOtp = useEffectEvent(() => {
     if (value && otp.join("") !== value) {
       setOtp(value.split(""));
@@ -82,41 +31,41 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
     updateFormData();
   }, [otp]);
 
-  let time
-  if (timer !== undefined) {
-    const minute = Math.floor(timer / 60)
-    const seconds = Math.floor(timer % 60)
-    time = `${minute < 10 ? "0" : ""}${minute}: ${seconds < 10 ? "0" : ""}${seconds}`
-  }
-
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
-    if (e.target.value.length <= 1) {
+    const value = e.target.value
+    if (!/^[0-9]?$/.test(value)) return
+    if (value.length <= 1) {
       setOtp((prevState) => {
-        prevState[index] = e.target.value;
-        return [...prevState];
+        const copy = [...prevState]
+        copy[index] = value;
+        return copy;
       });
     }
-    if (index > 0 && e.target.value === "") {
+    if (index > 0 && value === "") {
       inputRef.current[index - 1]?.focus();
-    } else if (inputRef.current[index + 1] && e.target.value !== "") {
+    } else if (inputRef.current[index + 1] && value !== "") {
       inputRef.current[index + 1]?.focus();
     }
   };
 
-  const handleResendOtp = async (e: MouseEvent<HTMLAnchorElement>) => {
-    e.preventDefault()
-    if (intervalPeriod === undefined || (timer && timer > 0)) return
-    setLoading(true)
-    await new Promise((resolve) => {
-      setTimeout(() => {
-        resolve("")
-      }, 2000)
-    })
-    setLoading(false)
-    setPostLoadingMessage("OTP Send Successfully")
-    setTimer(intervalPeriod)
-    setOtpTimer()
+  const handleKeyDown = (e:KeyboardEvent<HTMLInputElement>, index: number) => {
+    if (e.key === "Backspace" && !otp[index] && index !== 0) {
+      inputRef.current[index - 1]?.focus();
+    } else if (e.key === "ArrowLeft" && index > 0) {
+      inputRef.current[index - 1]?.focus();
+    } else if (e.key === "ArrowRight" && index < count - 1) {
+      inputRef.current[index + 1]?.focus();
+    } else if (!/[0-9]/.test(e.key) && !["Backspace", "ArrowLeft", "ArrowRight", "Tab"].includes(e.key)) {
+      e.preventDefault();
+    }
   }
+
+  const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    const data = e.clipboardData.getData("text").slice(0, count);
+    setOtp(data.split(""));
+    inputRef.current[data.length - 1]?.focus();
+  };
+
 
   return (
     <div className="flex flex-col gap-2 items-center">
@@ -125,25 +74,24 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
         {Array.from({ length: count }).map((_, index) => {
           return (
             <input
+              id={`otpInput${index}`}
               key={index}
-              min="0"
-              type="number"
+              type="text"
+              inputMode="numeric"
+              pattern="\d*"
+              maxLength={1}
               value={otp[index] || ""}
               onChange={(e) => handleChange(index, e)}
               ref={(el) => {
-                inputRef.current.push(el);
+                inputRef.current[index] = el;
               }}
+              onKeyDown={(e) => handleKeyDown(e, index)}
+              onPaste={handlePaste}
             />
           );
         })}
       </div>
-      {
-        loading ?
-          <a>Sending...</a> :
-          postLoadingMessage ?
-            <a>{postLoadingMessage}</a> :
-            <a className="cursor-pointer" onClick={handleResendOtp}>Resend OTP {!!timer && time && <span>({time})</span>}</a>
-      }
+      <OtpTimer intervalPeriod={intervalPeriod} />
       {error && <span className="ms-3 text-red-500">{error}</span>}
     </div>
   );
