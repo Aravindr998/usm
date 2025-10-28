@@ -1,6 +1,7 @@
 import type { Metadata } from "next";
 import { Bitcount_Grid_Single } from "next/font/google";
 import "./globals.css";
+import StoreProvider from "./StoreProvider";
 
 
 const bitcountGridSingle = Bitcount_Grid_Single({
@@ -20,12 +21,14 @@ export default function RootLayout({
   children: React.ReactNode;
 }>) {
   return (
-    <html lang="en">
-      <body
-        className={`${bitcountGridSingle.variable} antialiased`}
-      >
-        {children}
-      </body>
-    </html>
+    <StoreProvider>
+      <html lang="en">
+        <body
+          className={`${bitcountGridSingle.variable} antialiased`}
+        >
+          {children}
+        </body>
+      </html>
+    </StoreProvider>
   );
 }

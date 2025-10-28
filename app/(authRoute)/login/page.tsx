@@ -9,6 +9,7 @@ import GlassCard from "@/components/Card/GlassCard";
 import { FormEvent, startTransition, useState, ViewTransition } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import NeoPopButton from "@/components/button/NeoPopButton";
+import { useAppDispatch } from "@/lib/hooks";
 
 const LoginPage = () => {
   const [error, setError] = useState({
@@ -20,11 +21,11 @@ const LoginPage = () => {
     password: ""
   })
 
+  const dispatch = useAppDispatch()
+
   const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
-    const formData = new FormData(e.currentTarget)
-    const email = formData.get("email")?.toString()
-    const password = formData.get("password")?.toString()
+    const {email, password} = formData
     let isError = false
     startTransition(() => {
       if (!email) {
@@ -60,7 +61,7 @@ const LoginPage = () => {
       email,
       password
     }
-    console.log(data)
+    
   }
 
   const handleChange = (value:string, key:string) => {

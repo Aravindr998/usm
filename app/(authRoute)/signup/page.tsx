@@ -5,16 +5,29 @@ import GlassCard from "@/components/Card/GlassCard";
 import AuthFormTemplate from "@/components/form/AuthFormTemplate";
 import OtpInput from "@/components/form/OtpInput";
 import TextInput from "@/components/form/TextInput";
+import { UserRegistrationData } from "@/lib/features/users/user.types";
+import { registerUser } from "@/lib/features/users/userSlice";
+import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { InputType } from "@/types/form.types";
 import registrationForm from "@/utils/forms/registrationForm";
 import { validateForm } from "@/utils/forms/validation";
 import Link from "next/link";
 import { FormEvent, startTransition, useEffect, useEffectEvent, useState, ViewTransition } from "react";
+import isEmpty from "lodash.isempty"
+import { useRegisterUserMutation } from "@/lib/features/users/userApi";
 
 const SignUpPage = () => {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [error, setError] = useState<Record<string, string>>({});
+
+  const [registerUser, {data: userDetails, isLoading, error: apiError}] = useRegisterUserMutation()
+
+  const dispatch = useAppDispatch()
+
+  // const {userDetails, isLoading, isVerified, error: apiError} = useAppSelector(state => state.user)
+  console.log('isLoading: ', isLoading);
+  console.log(userDetails, "user")
 
   const resetFormData = useEffectEvent(() => setFormData({}))
 
@@ -22,8 +35,17 @@ const SignUpPage = () => {
     resetFormData()
   }, [step])
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  // useEffect(() => {
+  //   if (!isEmpty(userDetails)) {
+  //     startTransition(() => {
+  //       setStep((prevState) => (prevState === 0 ? 1 : 0));
+  //     });
+  //   }
+  // }, [userDetails]);
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
+    if (isLoading) return
     setError({})
     const formErrors = validateForm(registrationForm[step], formData);
     startTransition(() => {
@@ -32,9 +54,12 @@ const SignUpPage = () => {
     if (Object.keys(formErrors).length !== 0) {
       return;
     }
-    console.log(formData);
+    const res = await registerUser(formData)
+    console.log(res, "res")
+    // dispatch(registerUser((formData as unknown) as UserRegistrationData))
+
     startTransition(() => {
-      setStep((prevState) => (prevState === 0 ? 1 : 0));
+        setStep((prevState) => (prevState === 0 ? 1 : 0));
     });
   };
 
@@ -103,7 +128,7 @@ const SignUpPage = () => {
           </div>
           <ViewTransition name="auth-button">
             <div className="flex gap-7 flex-col items-center">
-              <NeoPopButton>{step === 0 ? "Sign up" : "Submit"}</NeoPopButton>
+              <NeoPopButton>{isLoading ? "Loading..." : step === 0 ? "Sign up" : "Submit"}</NeoPopButton>
               {step === 0 && (
                 <span className="text-center">
                   Already have an account?{" "}
