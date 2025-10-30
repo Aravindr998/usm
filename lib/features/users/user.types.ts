@@ -13,6 +13,9 @@ export interface OtpVerifyData {
     email: string,
     otp: string
 }
+export interface OtpResendData {
+    email: string,
+}
 
 export interface UserInitialState {
     userDetails: unknown,

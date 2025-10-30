@@ -4,7 +4,7 @@ import { OtpProps } from "@/types/form.types";
 import { ChangeEvent, KeyboardEvent, useEffect, useRef } from "react";
 import OtpTimer from "./OtpTimer";
 
-const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 }: OtpProps) => {
+const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 5, resend = () => {}, resendData, resendError, resendLoading }: OtpProps) => {
   const inputRef = useRef<(HTMLInputElement | null)[]>([]);
 
   useEffect(() => {
@@ -12,6 +12,7 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
   }, []);
 
   const handleChange = (index: number, e: ChangeEvent<HTMLInputElement>) => {
+    console.log("here")
     const enteredValue = e.target.value
     if (!/^[0-9]?$/.test(enteredValue)) return
     if (enteredValue.length <= 1) {
@@ -33,12 +34,11 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
       inputRef.current[index - 1]?.focus();
     } else if (e.key === "ArrowRight" && index < count - 1) {
       inputRef.current[index + 1]?.focus();
-    } else if (!/[0-9]/.test(e.key) && !["Backspace", "ArrowLeft", "ArrowRight", "Tab"].includes(e.key)) {
-      e.preventDefault();
     }
   }
 
   const handlePaste = (e: React.ClipboardEvent<HTMLInputElement>) => {
+    console.log("here")
     const data = e.clipboardData.getData("text").slice(0, count);
     onChange(data.split(""));
     inputRef.current[data.length - 1]?.focus();
@@ -69,7 +69,7 @@ const OtpInput = ({ count = 6, onChange, value, error = "", intervalPeriod = 10 
           );
         })}
       </div>
-      <OtpTimer intervalPeriod={intervalPeriod} />
+      <OtpTimer intervalPeriod={intervalPeriod} resend={resend} error={resendError} data={resendData} loading={resendLoading} />
       {error && <span className="ms-3 text-red-500">{error}</span>}
     </div>
   );

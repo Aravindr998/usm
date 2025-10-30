@@ -5,29 +5,25 @@ import GlassCard from "@/components/Card/GlassCard";
 import AuthFormTemplate from "@/components/form/AuthFormTemplate";
 import OtpInput from "@/components/form/OtpInput";
 import TextInput from "@/components/form/TextInput";
-import { UserRegistrationData } from "@/lib/features/users/user.types";
-import { registerUser } from "@/lib/features/users/userSlice";
-import { useAppDispatch, useAppSelector } from "@/lib/hooks";
 import { InputType } from "@/types/form.types";
 import registrationForm from "@/utils/forms/registrationForm";
 import { validateForm } from "@/utils/forms/validation";
 import Link from "next/link";
-import { FormEvent, startTransition, useEffect, useEffectEvent, useState, ViewTransition } from "react";
-import isEmpty from "lodash.isempty"
-import { useRegisterUserMutation } from "@/lib/features/users/userApi";
+import { FormEvent, startTransition, useCallback, useEffect, useEffectEvent, useState, ViewTransition } from "react";
+import { useRegisterUserMutation, useResendOtpMutation, useVerifyOtpMutation } from "@/lib/features/users/userApi";
+import { UserRegistrationData } from "@/lib/features/users/user.types";
+import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {
   const [step, setStep] = useState(0);
   const [formData, setFormData] = useState<Record<string, string>>({})
   const [error, setError] = useState<Record<string, string>>({});
 
-  const [registerUser, {data: userDetails, isLoading, error: apiError}] = useRegisterUserMutation()
+  const [registerUser, {data: registrationData, isLoading }] = useRegisterUserMutation()
+  const [verifyOtp, {isLoading: otpLoading}] = useVerifyOtpMutation()
+  const [resendOtp, {data: resendData, isLoading: resendOtpLoading, error: resendError}] = useResendOtpMutation()
 
-  const dispatch = useAppDispatch()
-
-  // const {userDetails, isLoading, isVerified, error: apiError} = useAppSelector(state => state.user)
-  console.log('isLoading: ', isLoading);
-  console.log(userDetails, "user")
+  const router = useRouter()
 
   const resetFormData = useEffectEvent(() => setFormData({}))
 
@@ -35,13 +31,22 @@ const SignUpPage = () => {
     resetFormData()
   }, [step])
 
-  // useEffect(() => {
-  //   if (!isEmpty(userDetails)) {
-  //     startTransition(() => {
-  //       setStep((prevState) => (prevState === 0 ? 1 : 0));
-  //     });
-  //   }
-  // }, [userDetails]);
+  const checkOtp = useCallback(async() => {
+    const data = {
+        email: registrationData?.user?.email,
+        otp: formData?.otp
+      }
+      const res = await verifyOtp(data)
+      if (res?.data?.success) {
+        router.push("/")
+      }
+  }, [formData?.otp, registrationData?.user?.email, router, verifyOtp])
+
+  useEffect(() => {
+    if (step === 1 && formData?.otp?.length === 6) {
+      checkOtp()
+    }
+  }, [step, formData?.otp, checkOtp])
 
   const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault();
@@ -54,13 +59,16 @@ const SignUpPage = () => {
     if (Object.keys(formErrors).length !== 0) {
       return;
     }
-    const res = await registerUser(formData)
-    console.log(res, "res")
-    // dispatch(registerUser((formData as unknown) as UserRegistrationData))
-
-    startTransition(() => {
-        setStep((prevState) => (prevState === 0 ? 1 : 0));
-    });
+    if (step === 0) {
+      const res = await registerUser((formData as unknown) as UserRegistrationData)
+      if (res?.data?.success) {
+        startTransition(() => {
+            setStep(1);
+        });
+      }
+    } else {
+      checkOtp()
+    }
   };
 
   function resetError(key: string) {
@@ -98,8 +106,16 @@ const SignUpPage = () => {
     }
     
   }
-  console.log("rendering")
-  console.log(formData)
+
+  const handleResendOtp = async () => {
+    try {
+      await resendOtp({email: registrationData?.user?.email as string})
+    } catch (error) {
+      console.log(error)
+    }
+  }
+
+  const loading = isLoading || otpLoading
 
   return (
     <AuthFormTemplate sideText="Sign up">
@@ -109,7 +125,7 @@ const SignUpPage = () => {
             {registrationForm[step].map(({ type, key, label }) => {
               switch (type) {
                 case "otp":
-                  return <OtpInput count={6} key={key} value={formData[key] ? formData[key]?.split("") : []} onChange={(value) => handleChange(value, key, type)} error={error[key]}/>;
+                  return <OtpInput count={6} key={key} value={formData[key] ? formData[key]?.split("") : []} onChange={(value) => handleChange(value, key, type)} error={error[key]} resend={handleResendOtp} resendLoading={resendOtpLoading} resendError={resendError} resendData={resendData}/>;
                 default:
                   return (
                     <TextInput
@@ -128,7 +144,7 @@ const SignUpPage = () => {
           </div>
           <ViewTransition name="auth-button">
             <div className="flex gap-7 flex-col items-center">
-              <NeoPopButton>{isLoading ? "Loading..." : step === 0 ? "Sign up" : "Submit"}</NeoPopButton>
+              <NeoPopButton loading={loading}>{step === 0 ? "Sign up" : "Submit"}</NeoPopButton>
               {step === 0 && (
                 <span className="text-center">
                   Already have an account?{" "}

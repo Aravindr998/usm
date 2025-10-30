@@ -1,13 +1,20 @@
 "use client"
+import isEmpty from 'lodash.isempty'
 import { MouseEvent, useCallback, useEffect, useRef, useState } from 'react'
 
 interface OtpTimerProps {
-    intervalPeriod: number
+    intervalPeriod: number,
+    resend: () => void,
+    error?: unknown,
+    loading?: boolean
+    data?: unknown
 }
 
-const OtpTimer = ({ intervalPeriod }: OtpTimerProps) => {
+const OtpTimer = ({ intervalPeriod, resend, error, loading, data }: OtpTimerProps) => {
+
+    console.log(error, "errors")
+    console.log(data, "data")
     const [timer, setTimer] = useState<number>()
-    const [loading, setLoading] = useState(false)
     const [postLoadingMessage, setPostLoadingMessage] = useState("")
 
     const intervalRef = useRef<NodeJS.Timeout>(null)
@@ -25,6 +32,18 @@ const OtpTimer = ({ intervalPeriod }: OtpTimerProps) => {
             })
         }, 1000)
     }, [intervalPeriod])
+
+    useEffect(() => {
+        if (!isEmpty(error)) {
+            setPostLoadingMessage("Something went wrong, please try again")
+        }
+    }, [error])
+
+    useEffect(() => {
+        if (!isEmpty(data) && (data as {success: boolean})?.success) {
+            setPostLoadingMessage("OTP Send Successfully")
+        }
+    }, [data])
 
     useEffect(() => {
         let timeout: NodeJS.Timeout
@@ -62,15 +81,13 @@ const OtpTimer = ({ intervalPeriod }: OtpTimerProps) => {
 
     const handleResendOtp = async (e: MouseEvent<HTMLAnchorElement>) => {
         e.preventDefault()
-        if (intervalPeriod === undefined || (timer && timer > 0)) return
-        setLoading(true)
-        await new Promise((resolve) => {
-            setTimeout(() => {
-                resolve("")
-            }, 2000)
-        })
-        setLoading(false)
-        setPostLoadingMessage("OTP Send Successfully")
+        try {
+            if (intervalPeriod === undefined || (timer && timer > 0)) return
+            await resend()
+        } catch (error) {
+            console.log(error)
+        } finally {
+        }
         setTimer(intervalPeriod)
         setOtpTimer()
     }

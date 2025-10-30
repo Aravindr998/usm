@@ -1,6 +1,5 @@
 .neo-pop-btn {
   position: relative;
-  display: inline-block;
   overflow: hidden;
   background: var(--foreground);
   color: var(--primary-color);
@@ -13,6 +12,7 @@
   text-transform: uppercase;
   box-shadow: 6px 6px 0 var(--shadow-color);
   transition: all 0.15s ease;
+  min-height: 3.5rem;
 }
 
 .neo-pop-btn::before {
@@ -40,4 +40,45 @@
   background: var(--active-secondary-color);
   transform: translate(3px, 3px);
   box-shadow: 3px 3px 0 var(--shadow-color);
+}
+
+.neo-pop-btn.loading {
+  pointer-events: none; /* disables hover & click */
+  opacity: 0.7; /* optional: visually indicate loading */
+  transform: none;
+  box-shadow: 6px 6px 0 var(--shadow-color);
+  background: var(--foreground);
+  cursor: wait;
+}
+
+/* Prevent hover and active transitions while loading */
+.neo-pop-btn.loading:hover,
+.neo-pop-btn.loading:active {
+  background: var(--foreground);
+  transform: none;
+  box-shadow: 6px 6px 0 var(--shadow-color);
+}
+
+/* Disable shine effect animation while loading */
+.neo-pop-btn.loading::before {
+  left: -100%;
+  transition: none;
+}
+
+.loader {
+  width: 30px;
+  aspect-ratio: 2;
+  --_g: no-repeat radial-gradient(circle closest-side,#000 90%,#0000);
+  background: 
+    var(--_g) 0%   50%,
+    var(--_g) 50%  50%,
+    var(--_g) 100% 50%;
+  background-size: calc(100%/3) 50%;
+  animation: l3 1s infinite linear;
+}
+@keyframes l3 {
+    20%{background-position:0%   0%, 50%  50%,100%  50%}
+    40%{background-position:0% 100%, 50%   0%,100%  50%}
+    60%{background-position:0%  50%, 50% 100%,100%   0%}
+    80%{background-position:0%  50%, 50%  50%,100% 100%}
 }

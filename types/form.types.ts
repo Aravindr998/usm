@@ -34,5 +34,9 @@ export interface OtpProps {
     onChange: (otp: string[]) => void,
     value: string[],
     error: string,
-    intervalPeriod?: number
+    intervalPeriod?: number,
+    resend?: () => void,
+    resendLoading?: boolean,
+    resendError?: unknown
+    resendData?: unknown
 }
