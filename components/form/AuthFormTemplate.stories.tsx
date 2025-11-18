@@ -3,7 +3,7 @@ import AuthFormTemplate from "./AuthFormTemplate";
 import GlassCard from "../Card/GlassCard";
 
 const meta = {
-    title: "AuthFormTemplate",
+    title: "Auth/AuthFormTemplate",
     component: AuthFormTemplate,
     tags: ["autodocs"],
     args: {

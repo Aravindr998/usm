@@ -1,6 +1,6 @@
 "use client";
 import { TextInputProps } from "@/types/form.types";
-import { FocusEvent, useState, ViewTransition } from "react";
+import { FocusEvent, useEffect, useState, ViewTransition } from "react";
 
 const TextInput = ({ label = "", placeholder = "", type, id, error="", name="", onChange, ref, value }: TextInputProps) => {
   const [focus, setFocus] = useState(false);
@@ -11,6 +11,12 @@ const TextInput = ({ label = "", placeholder = "", type, id, error="", name="", 
     if (!e.target.value)
       setFocus(false);
   };
+
+  useEffect(() => {
+    if (value && !focus) {
+      setFocus(true)
+    }
+  }, [value, focus])
 
   return (
     <div className="flex flex-col gap-1">

@@ -2,7 +2,7 @@ import type { Meta, StoryObj } from "@storybook/nextjs";
 import GlassCard from "./GlassCard";
 
 const meta = {
-    title: "GlassCard",
+    title: "Components/GlassCard",
     component: GlassCard,
     tags: ["autodocs"],
     parameters: {

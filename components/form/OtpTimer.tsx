@@ -12,8 +12,6 @@ interface OtpTimerProps {
 
 const OtpTimer = ({ intervalPeriod, resend, error, loading, data }: OtpTimerProps) => {
 
-    console.log(error, "errors")
-    console.log(data, "data")
     const [timer, setTimer] = useState<number>()
     const [postLoadingMessage, setPostLoadingMessage] = useState("")
 
