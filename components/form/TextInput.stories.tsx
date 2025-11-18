@@ -36,14 +36,16 @@ export const WithoutLabel: Story = {
 export const TypeEmail: Story = {
     args: {
         ...Default.args,
-        type: "email"
+        type: "email",
+        value: "test@email.com"
     }
 }
 
 export const TypePassword: Story = {
     args: {
         ...Default.args,
-        type: "password"
+        type: "password",
+        value: "Password"
     }
 }
 
