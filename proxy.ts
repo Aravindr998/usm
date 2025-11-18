@@ -6,11 +6,9 @@ const publicRoutes = ["/about"]
 export function proxy(request: NextRequest) {
     const tokenCookie = request.cookies.get("token")
     const pathname = request.nextUrl.pathname
-    console.log(tokenCookie, "tokencookie")
     if (tokenCookie && publicGuardRoutes.includes(pathname)) {
       return NextResponse.redirect(new URL("/", request.url))
     } else if (!tokenCookie && (!publicRoutes.includes(pathname) && !publicGuardRoutes.includes(pathname))) {
-      console.log("here")
       return NextResponse.redirect(new URL("/login", request.url))
     }
   return NextResponse.next()
