@@ -9,7 +9,10 @@ import GlassCard from "@/components/Card/GlassCard";
 import { FormEvent, startTransition, useState, ViewTransition } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import NeoPopButton from "@/components/button/NeoPopButton";
-import { useAppDispatch } from "@/lib/hooks";
+import { useLoginUserMutation } from "@/lib/features/users/userApi";
+import { useRouter } from "next/navigation";
+import { toast } from "react-toastify";
+import { setCookie } from "@/utils/common";
 
 const LoginPage = () => {
   const [error, setError] = useState({
@@ -21,9 +24,11 @@ const LoginPage = () => {
     password: ""
   })
 
-  const dispatch = useAppDispatch()
+  const [loginUser, {isLoading}] = useLoginUserMutation()
 
-  const handleSubmit = (e: FormEvent<HTMLFormElement>) => {
+  const router = useRouter()
+
+  const handleSubmit = async (e: FormEvent<HTMLFormElement>) => {
     e.preventDefault()
     const {email, password} = formData
     let isError = false
@@ -61,7 +66,14 @@ const LoginPage = () => {
       email,
       password
     }
-    
+    const res = await loginUser(data)
+    console.log(res?.data)
+    if (res?.data?.success) {
+      setCookie("token", res?.data?.token)
+      router.push("/")
+    } else {
+      toast.error("Something went wrong, Please try again later")
+    }
   }
 
   const handleChange = (value:string, key:string) => {
@@ -96,7 +108,7 @@ const LoginPage = () => {
           </div>
           <ViewTransition name="auth-button">
             <div className="flex gap-7 flex-col items-center">
-              <NeoPopButton>
+              <NeoPopButton loading={isLoading}>
                 Login
               </NeoPopButton>
               <span>

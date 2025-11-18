@@ -12,3 +12,17 @@ export function isFetchBaseQueryError(
     typeof (error as Record<string, unknown>).data === "object"
   )
 }
+
+export function getCookie(key: string) {
+  const cookieList = document.cookie.split(";")
+  const cookie = cookieList.find(item => item.includes(key))
+  return decodeURIComponent(cookie?.split("=")?.[0] || "")
+}
+
+export function setCookie(name: string, value: string, days = 10) {
+  const date = new Date();
+  date.setTime(date.getTime() + days * 24 * 60 * 60 * 1000);
+  const expires = "expires=" + date.toUTCString();
+
+  document.cookie = `${name}=${encodeURIComponent(value)}; ${expires}; path=/`;
+}
