@@ -15,6 +15,14 @@
   min-height: 3.5rem;
 }
 
+.neo-pop-btn:disabled {
+  pointer-events: none; /* disables hover & click */
+  opacity: 0.7; /* optional: visually indicate loading */
+  transform: none;
+  box-shadow: 6px 6px 0 var(--shadow-color);
+  background: var(--foreground);
+}
+
 .neo-pop-btn::before {
   content: "";
   position: absolute;
