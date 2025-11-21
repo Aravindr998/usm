@@ -1,7 +1,7 @@
-import { ChangeEvent, Ref } from "react"
+import { ChangeEvent, InputHTMLAttributes, Ref } from "react"
 
 export type InputType = "text" | "email" | "password"
-export interface TextInputProps {
+export interface TextInputProps extends InputHTMLAttributes<HTMLInputElement> {
     label: string,
     placeholder?: string,
     type: InputType,

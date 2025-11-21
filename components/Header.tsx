@@ -1,15 +1,8 @@
-import {
-  DropdownMenu,
-  DropdownMenuContent,
-  DropdownMenuItem,
-  DropdownMenuLabel,
-  DropdownMenuSeparator,
-  DropdownMenuTrigger,
-} from "@/components/ui/dropdown-menu";
-import DropdownButton from "./button/DropdownButton";
-import SecondaryButton from "./button/SecondaryButton";
+"use client"
+
 import { Bookmark, Settings, ShoppingBag, User } from "lucide-react";
-import Link from "next/link";
+import DropdownMenuList from "./DropdownMenuList";
+import { ViewTransition } from "react";
 
 const accountMenuList = [
   {
@@ -40,39 +33,13 @@ const accountMenuList = [
 
 const Header = () => {
   return (
-    <div className="bg-linear-to-r from--gray-950 via-gray-900 to-gray-950 fixed top-0 left-0 right-0 h-18 flex items-center justify-between p-3">
-      <div></div>
-      <span className="text-5xl">Test</span>
-      <div className="p-4">
-        <DropdownMenu>
-          <DropdownMenuTrigger className="outline-none">
-            <DropdownButton type="dark" buttonText="Account" />
-          </DropdownMenuTrigger>
-          <DropdownMenuContent className="min-w-56 me-3 bg-linear-to-b from-gray-800 to-gray-700 border-gray-700 text-white">
-            <DropdownMenuLabel>
-              <div className="flex items-center gap-2">
-                <img src="/profile.png" className="w-10 h-10" />
-                <span className="text-lg">Aravind R</span>
-              </div>
-            </DropdownMenuLabel>
-            <DropdownMenuSeparator className="bg-gray-700" />
-            {accountMenuList.map((item) => {
-              const Icon = item.Icon;
-              return (
-                <DropdownMenuItem className="focus:bg-gray-500" key={item.key}>
-                  <Link href={item.href} className="flex items-center gap-2 py-2">
-                    <Icon color="white" />
-                    <span className="text-white">{item.label}</span>
-                  </Link>
-                </DropdownMenuItem>
-              );
-            })}
-            <DropdownMenuSeparator className="bg-gray-600" />
-            <DropdownMenuItem className="flex justify-center focus:bg-transparent">
-              <SecondaryButton className="w-full">Logout</SecondaryButton>
-            </DropdownMenuItem>
-          </DropdownMenuContent>
-        </DropdownMenu>
+    <div className="bg-linear-to-r from-gray-950 via-gray-900 to-gray-950 fixed top-0 left-0 right-0 h-18 p-3 z-20">
+      <div className="absolute left-5 top-1/2 -translate-y-1/2 text-lg">Hi Aravind</div>
+      <ViewTransition name="site-title">
+        <span className="text-5xl absolute left-1/2 top-1/2 -translate-1/2">Test</span>
+      </ViewTransition>
+      <div className="p-4 absolute right-5 top-1/2 -translate-y-1/2">
+        <DropdownMenuList menuList={accountMenuList} buttonText="Account" labelIcon="/images/profile.png" menuLabel="Aravind R" showSecondaryButton secondaryButtonText="Logout" />
       </div>
     </div>
   );

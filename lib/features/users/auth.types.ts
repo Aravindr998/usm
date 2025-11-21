@@ -17,7 +17,7 @@ export interface OtpResendData {
     email: string,
 }
 
-export interface UserInitialState {
+export interface AuthUserInitialState {
     userDetails: unknown,
     isVerified: boolean,
     isLoading: boolean,

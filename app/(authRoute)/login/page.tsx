@@ -9,7 +9,7 @@ import GlassCard from "@/components/Card/GlassCard";
 import { FormEvent, startTransition, useState, ViewTransition } from "react";
 import { validateEmail } from "@/utils/forms/validation";
 import NeoPopButton from "@/components/button/NeoPopButton";
-import { useLoginUserMutation } from "@/lib/features/users/userApi";
+import { useLoginUserMutation } from "@/lib/features/users/authApi";
 import { useRouter } from "next/navigation";
 import { toast } from "react-toastify";
 import { setCookie } from "@/utils/common";

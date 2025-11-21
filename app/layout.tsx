@@ -24,7 +24,7 @@ export default function RootLayout({
     <StoreProvider>
       <html lang="en">
         <body
-          className={`${bitcountGridSingle.variable} antialiased`}
+          className={`${bitcountGridSingle.variable} antialiased dark`}
         >
           {children}
         </body>

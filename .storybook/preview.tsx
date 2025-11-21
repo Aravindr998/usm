@@ -38,7 +38,7 @@ const preview: Preview = {
   },
   decorators: [
     (Story) => (
-      <div className={`${bitcountGridSingle.variable} antialiased font-bitcount`}>
+      <div className={`${bitcountGridSingle.variable} antialiased font-bitcount dark`}>
         <Story />
       </div>
     )

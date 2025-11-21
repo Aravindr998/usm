@@ -8,10 +8,10 @@ interface DropdownButtonProps extends HTMLAttributes<HTMLButtonElement> {
 
 const DropdownButton = ({type, buttonText}: DropdownButtonProps) => {
   return (
-    <button className={`flex items-center text-lg cursor-pointer ${type === "light" ? "text-black" : "text-white"}`}>
+    <div className={`flex items-center text-lg cursor-pointer ${type === "light" ? "text-black" : "text-white"}`}>
         <span>{buttonText}</span>
         <ChevronDown />
-    </button>
+    </div>
   )
 }
 
