@@ -1,6 +1,6 @@
 import { OtpResendData, OtpVerifyData, UserLoginData, UserRegistrationData } from "./auth.types"
 import { createApi } from "@reduxjs/toolkit/query/react"
-import baseQueryWithErrorHandler from "../api";
+import { baseQueryWithErrorHandler } from "../api";
 
 export const authApi = createApi({
   reducerPath: "authApi",

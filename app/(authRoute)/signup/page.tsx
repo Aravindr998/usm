@@ -10,8 +10,8 @@ import registrationForm from "@/utils/forms/registrationForm";
 import { validateForm } from "@/utils/forms/validation";
 import Link from "next/link";
 import { FormEvent, startTransition, useCallback, useEffect, useEffectEvent, useState, ViewTransition } from "react";
-import { useRegisterUserMutation, useResendOtpMutation, useVerifyOtpMutation } from "@/lib/features/users/authApi";
-import { UserRegistrationData } from "@/lib/features/users/auth.types";
+import { useRegisterUserMutation, useResendOtpMutation, useVerifyOtpMutation } from "@/lib/features/auth/authApi";
+import { UserRegistrationData } from "@/lib/features/auth/auth.types";
 import { useRouter } from "next/navigation";
 
 const SignUpPage = () => {

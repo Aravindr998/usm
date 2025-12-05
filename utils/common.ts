@@ -16,7 +16,7 @@ export function isFetchBaseQueryError(
 export function getCookie(key: string) {
   const cookieList = document.cookie.split(";")
   const cookie = cookieList.find(item => item.includes(key))
-  return decodeURIComponent(cookie?.split("=")?.[0] || "")
+  return decodeURIComponent(cookie?.split("=")?.[1] || "")
 }
 
 export function setCookie(name: string, value: string, days = 10) {
